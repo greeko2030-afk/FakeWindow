@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'fabric-loom' version '1.7.1' // Changed to stable version 1.7.1 to fix the Loom extension error
     id 'maven-publish'
 }
 
@@ -33,7 +33,6 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.21 requires Java 21
     it.options.release = 21
 }
 
@@ -48,4 +47,3 @@ jar {
         rename { "${it}_${project.base.archivesName.get()}"}
     }
 }
-
