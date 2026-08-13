@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
-# Grant permission to create and update releases
 permissions:
   contents: write
 
@@ -26,26 +25,25 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.7' # Forced stable Gradle version to prevent API errors
       
     - name: Build Mod with Gradle
-      # Using standard gradle command as requested
       run: gradle build
 
     - name: Rename Mod File
       run: |
-        # Find the main compiled jar (ignoring -dev and -sources jars) and rename it to FakeWindow-1.00.jar
         find build/libs -maxdepth 1 -type f -name "*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" -exec mv {} build/libs/FakeWindow-1.00.jar \;
 
     - name: Upload to GitHub Releases
       uses: ncipollo/release-action@v1
-      # Only create a release when code is pushed to main/master, not on pull requests
       if: github.event_name == 'push'
       with:
         tag: "latest"
         name: "FakeWindow - Latest Build"
         body: "Automatically built FakeWindow mod for Minecraft 1.21.x by GreekoASC."
         artifacts: "build/libs/FakeWindow-1.00.jar"
-        allowUpdates: true          # Allows replacing the release if it already exists
-        replacesArtifacts: true     # Automatically deletes the old .jar and uploads the new one
+        allowUpdates: true
+        replacesArtifacts: true
         makeLatest: true
         token: ${{ secrets.GITHUB_TOKEN }}
