@@ -1,1 +1,30 @@
-
+{
+  "schemaVersion": 1,
+  "id": "fakewindow",
+  "version": "1.0.0",
+  "name": "FakeWindow",
+  "description": "Optimized Borderless Window with Fake Resolution scaling.",
+  "authors": [
+    "GreekoASC"
+  ],
+  "contact": {
+    "homepage": "https://www.greekoasc.com",
+    "sources": "https://github.com/GreekoASC/FakeWindow"
+  },
+  "license": "MIT",
+  "icon": "assets/fakewindow/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.greekoasc.fakewindow.FakeWindowMod"
+    ]
+  },
+  "mixins": [
+    "fakewindow.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": ">=1.21 <1.22",
+    "fabric-api": "*"
+  }
+}
