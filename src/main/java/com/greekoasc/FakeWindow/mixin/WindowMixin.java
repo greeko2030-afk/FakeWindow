@@ -2,7 +2,9 @@ package com.greekoasc.fakewindow.mixin;
 
 import net.minecraft.client.util.Window;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -10,19 +12,34 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Window.class)
 public class WindowMixin {
 
+    @Shadow private long handle;
+
     /**
-     * Injects code right before GLFW creates the window in Minecraft.
-     * This makes the window borderless (Fake Window concept).
+     * 1. Remove borders BEFORE the window is created.
      */
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwCreateWindow(IILjava/lang/CharSequence;JJ)J", shift = At.Shift.BEFORE))
     private void makeWindowBorderless(CallbackInfo ci) {
-        
-        // Remove the window border and title bar
         GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, GLFW.GLFW_FALSE);
-        
-        // Prevent the window from being resized manually by the user
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
+    }
+
+    /**
+     * 2. Force the window size to match the monitor exactly AFTER creation.
+     * This fixes the black screen issue by naturally using the default resolution.
+     */
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void forceNativeResolution(CallbackInfo ci) {
+        long monitor = GLFW.glfwGetPrimaryMonitor();
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(monitor);
         
-        System.out.println("[GreekoASC] Window hints modified: Borderless Fake Window Applied.");
+        if (vidMode != null) {
+            // Set window to the monitor's full native resolution
+            GLFW.glfwSetWindowSize(this.handle, vidMode.width(), vidMode.height());
+            
+            // Snap window to the top-left corner
+            GLFW.glfwSetWindowPos(this.handle, 0, 0);
+            
+            System.out.println("[GreekoASC] Fake Window active: Borderless at " + vidMode.width() + "x" + vidMode.height());
+        }
     }
 }
