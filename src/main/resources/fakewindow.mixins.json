@@ -4,14 +4,12 @@
   "package": "com.greekoasc.fakewindow.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "WindowMixin",
-    "WindowResolutionMixin"
+    "WindowMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
-    "WindowMixin",
-    "WindowResolutionMixin"
+    "WindowMixin"
   ]
 }
